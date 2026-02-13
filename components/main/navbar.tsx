@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+export function ConditionalNavbar() {
+    const pathname = usePathname();
+    const isDashboardPage = pathname.includes("/Dashboard");
+    
+    if (isDashboardPage) {
+        return null;
+    }
+    
+    return <Navbar />;
+}
+
 export function Navbar() {
     const pathname = usePathname();
     const isAuthPage = pathname.includes("/auth");
