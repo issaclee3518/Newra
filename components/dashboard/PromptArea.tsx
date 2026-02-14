@@ -49,6 +49,7 @@ type PromptInputProps = {
     onValueChange?: (value: string) => void;
     maxHeight?: number | string;
     onSubmit?: () => void;
+    disabled?: boolean;
     children: React.ReactNode;
     className?: string;
 };
@@ -60,6 +61,7 @@ function PromptInput({
     value,
     onValueChange,
     onSubmit,
+    disabled = false,
     children,
 }: PromptInputProps) {
     const [internalValue, setInternalValue] = useState(value || "");
@@ -78,6 +80,7 @@ function PromptInput({
                     setValue: onValueChange ?? handleChange,
                     maxHeight,
                     onSubmit,
+                    disabled,
                 }}
             >
                 <div
@@ -127,7 +130,10 @@ function PromptInputTextarea({
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            onSubmit?.();
+            // disabled 상태이거나 이미 요청이 진행 중이면 무시
+            if (!disabled) {
+                onSubmit?.();
+            }
         }
         onKeyDown?.(e);
     };

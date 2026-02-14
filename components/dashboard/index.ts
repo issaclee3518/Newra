@@ -5,3 +5,5 @@ export {
     PromptInputActions,
     PromptInputAction,
 } from "./PromptArea";
+export { BlobLoader } from "./BlobLoader";
+export { Sidebar } from "./Sidebar";

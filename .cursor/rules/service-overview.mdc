@@ -1,0 +1,110 @@
+---
+alwaysApply: true
+description: Thumbnail Generator 서비스 개요 및 아키텍처
+---
+
+# Thumbnail Generator 서비스 개요
+
+## 서비스 설명
+
+**Thumbnail Generator**는 사용자가 텍스트 프롬프트를 입력하면 AI가 유튜브 썸네일 이미지를 생성하는 웹 애플리케이션입니다.
+
+## 주요 기능
+
+1. **사용자 인증**: Supabase Auth를 통한 이메일/비밀번호 및 OAuth (Google, GitHub) 로그인
+2. **AI 이미지 생성**: OpenAI DALL-E 3 API를 사용한 고품질 이미지 생성
+3. **이미지 저장**: 생성된 이미지를 Supabase Storage에 저장하고 데이터베이스에 메타데이터 기록
+4. **대시보드**: 로그인한 사용자가 프롬프트를 입력하고 생성된 썸네일을 확인할 수 있는 인터페이스
+
+## 기술 스택
+
+### Frontend
+- **Next.js 16**: React 프레임워크
+- **TypeScript**: 타입 안정성
+- **Tailwind CSS**: 스타일링
+- **Framer Motion**: UI 애니메이션
+- **Three.js / @react-three/fiber**: 3D 로딩 애니메이션
+
+### Backend
+- **Next.js API Routes**: 서버 사이드 API 엔드포인트
+- **Supabase**: 
+  - Authentication (인증)
+  - PostgreSQL Database (데이터 저장)
+  - Storage (이미지 파일 저장)
+
+### AI/Image Generation
+- **OpenAI API**: DALL-E 3 모델을 사용한 이미지 생성
+
+## 프로젝트 구조
+
+```
+app/
+  ├── Dashboard/          # 대시보드 페이지 (로그인 필요)
+  ├── auth/               # 인증 페이지
+  └── api/
+      └── thumbnail/
+          └── generate/   # 썸네일 생성 API 엔드포인트
+
+components/
+  ├── dashboard/          # 대시보드 전용 컴포넌트
+  │   ├── navbar.tsx      # 대시보드 네비게이션 바
+  │   ├── PromptArea.tsx  # 프롬프트 입력 영역
+  │   └── BlobLoader.tsx  # 3D 로딩 애니메이션
+  └── main/               # 메인 페이지 컴포넌트
+
+lib/
+  ├── auth/               # 인증 관련 함수들
+  ├── openai/             # OpenAI API 이미지 생성
+  ├── thumbnail/          # 썸네일 생성 로직
+  └── supabase-server.ts  # 서버 사이드 Supabase 클라이언트
+```
+
+## 데이터베이스 스키마
+
+### Thumbnails 테이블
+- `id`: UUID (Primary Key)
+- `user_id`: UUID (Foreign Key to auth.users)
+- `prompt`: TEXT (사용자가 입력한 프롬프트 또는 DALL-E가 개선한 프롬프트)
+- `image_url`: TEXT (Supabase Storage의 Public URL)
+- `storage_path`: TEXT (Storage 내 파일 경로)
+- `created_at`: TIMESTAMP
+
+### Storage
+- **Bucket**: `images`
+- **Public**: Yes (모든 사용자가 접근 가능)
+- **Path Structure**: `{user_id}/{timestamp}.png`
+
+## 주요 워크플로우
+
+1. **사용자 인증**: 사용자가 로그인하면 세션이 생성됨
+2. **프롬프트 입력**: 대시보드에서 사용자가 프롬프트를 입력
+3. **이미지 생성**: 
+   - 클라이언트가 `/api/thumbnail/generate`로 POST 요청
+   - 서버가 OpenAI DALL-E API를 호출하여 이미지 생성
+   - 생성된 이미지를 다운로드하여 Supabase Storage에 업로드
+   - 데이터베이스에 메타데이터 저장
+4. **이미지 표시**: 생성된 이미지의 Public URL을 반환하여 클라이언트에 표시
+
+## 환경 변수
+
+필요한 환경 변수:
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase 프로젝트 URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anonymous Key
+- `OPENAI_API_KEY`: OpenAI API 키
+
+## 현재 상태
+
+- ✅ 사용자 인증 시스템 구현 완료
+- ✅ OpenAI DALL-E 3 이미지 생성 구현 완료
+- ✅ Supabase Storage 업로드 및 데이터베이스 저장 구현 완료
+- ✅ 대시보드 UI 구현 완료
+- ✅ 3D 로딩 애니메이션 구현 완료
+- 🔄 프롬프트 엔지니어링 개선 (유튜브 썸네일 가이드라인 적용 예정)
+
+## 향후 개선 사항
+
+1. **프롬프트 개선**: 사용자 입력을 유튜브 썸네일 최적화 프롬프트로 자동 변환
+2. **이미지 크기**: 16:9 비율 (1792x1024) 지원
+3. **썸네일 갤러리**: 사용자가 생성한 썸네일 목록 보기
+4. **편집 기능**: 생성된 썸네일에 텍스트 추가, 필터 적용 등
+5. **템플릿**: 미리 정의된 썸네일 템플릿 제공
