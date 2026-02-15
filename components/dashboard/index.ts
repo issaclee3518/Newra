@@ -7,3 +7,4 @@ export {
 } from "./PromptArea";
 export { BlobLoader } from "./BlobLoader";
 export { Sidebar } from "./Sidebar";
+export { PricingModal } from "./PricingModal";

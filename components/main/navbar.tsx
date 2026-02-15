@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getSession } from "@/lib/auth";
 
 export function ConditionalNavbar() {
     const pathname = usePathname();
@@ -19,6 +20,11 @@ export function ConditionalNavbar() {
 export function Navbar() {
     const pathname = usePathname();
     const isAuthPage = pathname.includes("/auth");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        getSession().then((session) => setIsLoggedIn(!!session));
+    }, []);
 
     const links = [
         { name: "Features", href: "#features" },
@@ -91,10 +97,10 @@ export function Navbar() {
                 ))}
             </div>
 
-            {/* Right: Get Started Button */}
+            {/* Right: Get Started Button — 로그인 시 대시보드, 미로그인 시 로그인 페이지 */}
             <div className="flex items-center">
                 <Link
-                    href="/auth"
+                    href={isLoggedIn ? "/Dashboard" : "/auth"}
                     className="rounded-full px-6 py-2 text-base font-semibold 
             bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 
             text-neutral-900 dark:text-white transition-all duration-300 

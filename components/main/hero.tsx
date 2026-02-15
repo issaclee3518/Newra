@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getSession } from "@/lib/auth";
 
 export function FloatingPaths({ position }: { position: number }) {
     const paths = Array.from({ length: 36 }, (_, i) => ({
@@ -53,6 +55,11 @@ export function BackgroundPaths({
     title?: string;
 }) {
     const words = title.split(" ");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        getSession().then((session) => setIsLoggedIn(!!session));
+    }, []);
 
     return (
         <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
@@ -112,9 +119,9 @@ export function BackgroundPaths({
                         dark:from-white/10 dark:to-black/10 p-px rounded-2xl backdrop-blur-lg 
                         overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
                     >
-                        <Button
-                            variant="ghost"
-                            className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
+                        <Link
+                            href={isLoggedIn ? "/Dashboard" : "/auth"}
+                            className="inline-flex items-center justify-center rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
                             bg-white/95 hover:bg-white/100 dark:bg-black/95 dark:hover:bg-black/100 
                             text-black dark:text-white transition-all duration-300 
                             group-hover:-translate-y-0.5 border border-black/10 dark:border-white/10
@@ -143,7 +150,7 @@ export function BackgroundPaths({
                                     <path d="m12 5 7 7-7 7" />
                                 </svg>
                             </span>
-                        </Button>
+                        </Link>
                     </div>
                 </motion.div>
             </div>

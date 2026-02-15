@@ -32,6 +32,8 @@ export default function DashboardPage() {
                 return;
             }
             setUser(session.user);
+            // 결제 후 대시보드 진입 시 Polar 결제 내역 동기화 (웹훅 미수신 시 대비)
+            fetch("/api/sync-subscription", { method: "POST" }).catch(() => {});
         } catch (error) {
             router.push("/auth");
         } finally {
