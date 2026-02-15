@@ -50,14 +50,16 @@ export async function generateImage(options: ImageGenerationOptions): Promise<Im
             response_format: "url", // URL 형식으로 응답 받기
         });
 
-        // 첫 번째 이미지 URL 반환
-        const imageUrl = response.data[0]?.url;
+        // 첫 번째 이미지 URL 반환 (response.data는 undefined일 수 있음)
+        const data = response.data ?? [];
+        const first = data[0];
+        const imageUrl = typeof first?.url === "string" ? first.url : undefined;
         if (!imageUrl) {
             throw new Error("이미지 생성에 실패했습니다. 응답에 이미지 URL이 없습니다.");
         }
 
         // DALL-E 3의 경우 revised_prompt가 있을 수 있음
-        const revisedPrompt = response.data[0]?.revised_prompt;
+        const revisedPrompt = first?.revised_prompt;
 
         return {
             imageUrl,
